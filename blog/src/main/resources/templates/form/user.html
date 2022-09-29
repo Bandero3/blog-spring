@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/fragments :: head(#{lt.codeacademy.blog.user.form.title})"></head>
+<body>
+<nav th:replace="fragments/fragments :: navigation"></nav>
+<div class="container main-area">
+    <h3 th:text="#{lt.codeacademy.blog.user.form.title}"></h3>
+    <form method="post" th:object="${user}" th:action="@{/public/users/save}">
+
+        <div class="album py-5 bg-light">
+
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputName', 'name', ${user.name ne null}, #{lt.codeacademy.blog.user.form.name}, 'text', false)"></div>
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputSurname', 'surname', ${user.surname ne null}, #{lt.codeacademy.blog.user.form.surname}, 'text', false)"></div>
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputUsername', 'username', ${user.username ne null}, #{lt.codeacademy.blog.user.form.username}, 'text', false)"></div>
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputEmail', 'email', ${user.email ne null}, #{lt.codeacademy.blog.user.form.email}, 'text', false)"></div>
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputCountry', 'country', ${user.country ne null}, #{lt.codeacademy.blog.user.form.country}, 'text', false)"></div>
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputCity', 'city', ${user.city ne null}, #{lt.codeacademy.blog.user.form.city}, 'text', false)"></div>
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputPassword', 'password', ${user.password ne null}, #{lt.codeacademy.blog.user.form.password}, 'password', true)"></div>
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputRepeatPassword', 'repeatPassword', ${user.repeatPassword ne null}, #{lt.codeacademy.blog.user.form.repeatPassword}, 'password', true)"></div>
+
+
+            <div class="d-flex justify-content-end">
+                <button type="submit"
+                        class="btn btn-outline-primary"
+                        th:text="#{lt.codeacademy.blog.user.form.button}"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<footer th:replace="fragments/fragments :: footer"></footer>
+</body>
+</html>

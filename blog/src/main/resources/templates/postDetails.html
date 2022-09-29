@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/fragments :: head(${'Product ' + post.name + ' Details'})"></head>
+
+<body>
+<nav th:replace="fragments/fragments :: navigation"></nav>
+
+<div th:if="${post ne null}">
+
+    <div class="container">
+        <div class="px-4 py-5 my-5 text-center">
+            <img class="d-block mx-auto mb-4" th:src="${post.image}" alt width="550px" height="350px">
+            <h1 class="display-5 fw-bold" th:text="${post.name}"></h1>
+            <div class="col-lg-6 mx-auto" th:text="${post.description}"></div>
+            <div class="col-lg-8 mx-auto" th:text="${post.date}"></div>
+
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="btn-group fs-3">
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/posts/{id}/update(id=${post.id})}">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+                <div class="float-end fs-3">
+                    <a sec:authorize="isAuthenticated()" th:href="@{/comment/save/{id}(id=${post.id})}">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </div>
+                <div class="float-end fs-3">
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/posts/{id}/delete(id=${post.id})}" class="text-danger">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="album py-5 bg-light mx-auto w-50">
+        <ul class="list-group list-group-flush"
+            th:if="${comments.hasContent() && comment.post.id eq post.id}"
+            th:each="comment: ${comments.content}">
+            <div class="d-flex">
+                <div class="flex-grow-1">
+                    <div class="text-muted"
+                         th:text="${comment.user.username}"></div>
+                    <div class="text-dark border-top border-bottom"
+                         th:text="${comment.comment}"></div>
+                    <div class="text-muted"
+                         th:text="${comment.date}"></div>
+                </div>
+                <div class="p-2" sec:authorize="isAuthenticated()"
+                     th:if="${#authentication.principal.id eq comment.user.id}">
+                    <a th:href="@{/comment/update/{id}(id=${comment.id})}">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </div>
+
+                <div class="p-2" sec:authorize="isAuthenticated()"
+                     th:if="${#authorization.getAuthentication().name eq 'admin' || #authentication.principal.id eq comment.user.id}">
+                    <a th:href="@{/comment/delete/{id}(id=${comment.id})}"
+                       class="text-danger">
+                        <i class="bi bi-x-square-fill"></i>
+                    </a>
+                </div>
+            </div>
+        </ul>
+        </div>
+    </div>
+</div>
+
+<div th:if="${post eq null}">
+    Product does not exist
+</div>
+</body>
+<footer th:replace="fragments/fragments :: footer"></footer>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <title th:text="${title}"></title>
+</head>
+<body>
+<nav th:fragment="navigation"
+     class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand"
+           th:href="@{/public/posts}"
+           th:text="${@blog.name}"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
+                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li sec:authorize="isAuthenticated()" class="nav-item">
+                    <a class="nav-link"
+                       th:classappend="${#httpServletRequest.requestURI eq '/posts/save' ? 'active' : ''}"
+                       th:href="@{/posts/save}"
+                       th:text="#{lt.codeacademy.blog.menu.post}"></a>
+                </li>
+                <li th:replace="this :: languageSelector"></li>
+            </ul>
+        </div>
+        <div>
+            <a sec:authorize="isAnonymous()"
+               th:href="@{/login}"
+               class="text-decoration-none text-light">
+                <i class="bi bi-person-x-fill fs-3"></i>
+            </a>
+            <div sec:authorize="isAuthenticated()"
+                 class="dropdown">
+
+                <a class="text-decoration-none text-light"
+                   href="#"
+                   role="button"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="bi bi-person-circle fs-3"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <li>
+                        <div class="user-name" sec:authentication="principal.fullName"></div>
+                    </li>
+                    <li><a class="dropdown-item"
+                           th:href="@{/logout}"
+                           th:text="#{lt.codeacademy.blog.menu.logout}"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<nav th:fragment="paginator"
+     aria-label="Page navigation example">
+    <ul class="pagination justify-content-center"
+        th:with="pageSort=${postsByPage.sort.toList().get(0)},
+                    sort=${pageSort.property + ',' + pageSort.direction + ',ignorecase'}">
+        <li class="page-item"
+            th:classappend="${postsByPage.number eq 0 ? 'disabled' : ''}">
+            <a class="page-link"
+               th:href="@{/public/posts(page=${postsByPage.number} - 1, sort=${sort})}"
+               th:text="#{lt.codeacademy.blog.posts.paginator.previous}">Previous</a>
+        </li>
+        <li class="page-item"
+            th:each="productPage: ${#numbers.sequence(0, postsByPage.totalPages - 1)}"
+            th:classappend="${productPage eq postsByPage.number ? 'active' : ''}">
+            <a class="page-link"
+               th:href="@{/public/posts(page=${productPage}, sort=${sort})}"
+               th:text="${productPage} + 1"></a>
+        </li>
+
+
+        <li class="page-item"
+            th:classappend="${postsByPage.number eq postsByPage.totalPages - 1 ? 'disabled' : ''}">
+            <a class="page-link"
+               th:href="@{/public/posts(page=${postsByPage.number}  + 1, sort=${sort})}"
+               th:text="#{lt.codeacademy.blog.posts.paginator.next}"></a>
+        </li>
+
+
+    </ul>
+</nav>
+
+<div th:fragment="notification(shouldShow, class, text)"
+     th:if="${shouldShow}"
+     class="alert"
+     th:classappend="${class}"
+     role="alert"
+     th:text="${text}">
+</div>
+
+<li th:fragment="languageSelector"
+    class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle"
+       href="#" role="button"
+       data-bs-toggle="dropdown"
+       aria-expanded="false"
+       th:text="#{lt.codeacademy.blog.language.switcher.select}">
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark">
+        <li><a class="dropdown-item"
+               th:href="${#httpServletRequest.requestURI + '?lang=EN'}"
+               th:text="#{lt.codeacademy.blog.language.switcher.en}"></a>
+        </li>
+        <li><a class="dropdown-item"
+               th:href="${#httpServletRequest.requestURI + '?lang=LT'}"
+               th:text="#{lt.codeacademy.blog.language.switcher.lt}"></a>
+        </li>
+    </ul>
+</li>
+
+<div th:fragment="inputWithErrorHandler(id, fieldName, isValueValid, text, type,showGlobalErrors)"
+     class="form-floating mb-3">
+    <input th:type="${type}"
+           class="form-control"
+           th:id="${id}"
+           th:field="*{__${fieldName}__}"
+           th:placeholder="${text}"
+           th:classappend="${#fields.hasErrors(fieldName) || showGlobalErrors && #fields.hasErrors('global')} ? 'is-invalid' : (${isValueValid} ? 'is-valid' : '')">
+    <label th:for="${id}"
+           th:text="${text}"></label>
+    <div class="invalid-feedback">
+        <div th:if="${#fields.hasErrors(fieldName)}"
+             th:errors="*{__${fieldName}__}">
+        </div>
+        <div th:if="${showGlobalErrors && #fields.hasErrors('global')}"
+             th:errors="*{global}">
+        </div>
+    </div>
+</div>
+
+
+</body>
+
+<footer th:fragment="footer"
+        class="bg-dark footer py-4">
+    <div class="container">
+        <div class="text-light text-center">
+            <div th:text="${@blog.address}"></div>
+            <div th:text="${@blog.phone}"></div>
+            <div th:text="${@blog.email}"></div>
+            <div>
+                <span th:text="${@blog.copyRight}"></span>
+                <span th:if="${myDate}"
+                      th:text="${myDate}"></span>
+            </div>
+
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</footer>
+
+</html>

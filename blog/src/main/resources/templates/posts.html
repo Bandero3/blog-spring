@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/fragments :: head(#{lt.codeacademy.blog.posts.title})">
+</head>
+<body>
+<nav th:replace="fragments/fragments :: navigation"></nav>
+<div class="container main-area">
+    <div th:replace="fragments/fragments :: notification(${not postsByPage.hasContent()}, 'alert-info', #{lt.codeacademy.blog.posts.message.empty.posts})"></div>
+
+    <div th:if="${postsByPage.hasContent()}" class="album py-5 bg-light">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <div class="col" th:each="post : ${postsByPage.content}">
+                    <div class="card shadow-sm">
+                        <img th:src="${post.image}"
+                             width="100%" height="100%">
+                        </svg>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${post.name}"></h5>
+                            <p class="card-text" th:text="${post.description}"></p>
+                            <h8 class="card-text" th:text="${post.date}"></h8>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group fs-3">
+                                    <a th:href="@{/public/posts/{id}(id=${post.id})}">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </div>
+                                <div class="float-end fs-3">
+                                    <a sec:authorize="hasRole('ADMIN')"
+                                       th:href="@{/posts/{id}/delete(id=${post.id})}" class="text-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div th:if="${postsByPage.hasContent()}" class="row">
+            <div class="col-2"></div>
+            <div class="col-8" th:insert="fragments/fragments :: paginator"></div>
+            <div class="col-2 text-end">
+                <span th:text="#{lt.codeacademy.blog.posts.paginator.total.posts(${postsByPage.totalElements})}"></span>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<footer th:replace="fragments/fragments :: footer"></footer>
+</html>

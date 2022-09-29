@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:with="postExists=${post.id ne null}">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <title th:if="${postExists}" th:text="#{lt.codeacademy.blog.post.update.title}"></title>
+    <title th:if="${not postExists}" th:text="#{lt.codeacademy.blog.post.create.title}"></title>
+</head>
+<body>
+<nav th:replace="fragments/fragments :: navigation"></nav>
+
+<div class="container main-area">
+    <div th:if="${not postExists}" class="container">
+        <h3 th:text="#{lt.codeacademy.blog.post.create.title}"></h3>
+    <form method="post" th:object="${post}" th:action="@{/posts/save}">
+        <div class="album py-5 bg-light">
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputName', 'name', ${post.name ne null}, #{lt.codeacademy.blog.post.form.name}, 'text', false)"></div>
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputDescription', 'description', ${post.description ne null}, #{lt.codeacademy.blog.post.form.description}, 'text', false)"></div>
+        <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputImage', 'image', ${post.image ne null}, #{lt.codeacademy.blog.post.form.image}, 'text', false)"></div>
+
+            <div class="d-flex justify-content-end">
+                <button type="submit"
+                        class="btn btn-outline-primary"
+                        th:text="#{lt.codeacademy.blog.post.create.button}"
+                ></button>
+            </div>
+        </div>
+    </form>
+    </div>
+    <div th:if="${postExists}" class="container">
+        <h3 th:text="#{lt.codeacademy.blog.post.update.title}"></h3>
+        <form method="post" th:object="${post}" th:action="@{/posts/{id}/update(id=${post.id})}">
+            <div class="album py-5 bg-light">
+                <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputName', 'name', ${post.name ne null}, #{lt.codeacademy.blog.post.form.name}, 'text', false)"></div>
+                <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputDescription', 'description', ${post.description ne null}, #{lt.codeacademy.blog.post.form.description}, 'text', false)"></div>
+                <div th:replace="fragments/fragments :: inputWithErrorHandler('floatingInputImage', 'image', ${post.image ne null}, #{lt.codeacademy.blog.post.form.image}, 'text', false)"></div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit"
+                            class="btn btn-outline-primary"
+                            th:text="#{lt.codeacademy.blog.post.update.button}"
+                    ></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<footer th:replace="fragments/fragments :: footer"></footer>
+</html>
